@@ -22,7 +22,7 @@ import Paper from "@material-ui/core/Paper";
 import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
-import SearchBar from './searchbar'
+import SearchBar from "./searchbar";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import getRequest from "../services/request";
@@ -117,7 +117,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
   return (
     <TableHead>
-      <TableRow>
+      <TableRow style={{ backgroundColor: "red" }}>
         <TableCell padding="checkbox">
           <Checkbox
             indeterminate={numSelected > 0 && numSelected < rowCount}
@@ -228,22 +228,22 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       width: "100%",
-      [theme.breakpoints.down('sm')]: {
+      [theme.breakpoints.down("sm")]: {
         width: "80%",
       },
     },
     paper: {
       width: "100%",
       marginBottom: theme.spacing(2),
-      [theme.breakpoints.down('sm')]: {
+      [theme.breakpoints.down("sm")]: {
         width: "485%",
         marginTop: "80px",
       },
-      [theme.breakpoints.up('md')]: {
+      [theme.breakpoints.up("md")]: {
         width: "150%",
       },
-      [theme.breakpoints.up('lg')]: {
-        width: "150%",
+      [theme.breakpoints.up("lg")]: {
+        width: "100%",
       },
     },
     table: {
@@ -323,10 +323,6 @@ export default function EnhancedTable() {
     setPage(0);
   };
 
-  const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDense(event.target.checked);
-  };
-
   const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
   const emptyRows =
@@ -334,23 +330,17 @@ export default function EnhancedTable() {
 
   async function getNews() {
     const response = await getRequest(
-      "everything?" +
-        "q=Apple&" +
-        "from=2021-07-19&" +
-        "sortBy=popularity&" +
-        "apiKey=6b2ed70787fe415da6affe90594198c7"
+      `top-headlines?country=us&category=business&pageSize=${rowsPerPage * 10}&page=${page+1}&apiKey=6b2ed70787fe415da6affe90594198c7`
     );
-    console.log(response);
+    
     setNews(response?.data?.articles);
   }
 
   useEffect(() => {
     getNews();
   }, []);
-  
-  
-  
-  console.log(news)
+
+  console.log(news);
 
   const handleChange = (e: any) => {
     setValues(e.target.value);
@@ -358,20 +348,14 @@ export default function EnhancedTable() {
 
   const filteredNews = news?.filter((news: any) => {
     return (
-    
-      (news?.title?.toLowerCase().includes(values?.toLowerCase()) ||
-      news?.source.name?.toLowerCase().includes(values?.toLowerCase())||
-        news?.author?.toLowerCase().includes(values?.toLowerCase()))
+      news?.title?.toLowerCase().includes(values?.toLowerCase()) ||
+      news?.source.name?.toLowerCase().includes(values?.toLowerCase()) ||
+      news?.author?.toLowerCase().includes(values?.toLowerCase())
     );
   });
 
-
-
-
-
   return (
-      <div style={{marginTop: '50px'}}>
-        
+    <div style={{ marginTop: "50px" }}>
       <SearchBar handleChange={handleChange} />
 
       <div className={classes.root}>
@@ -407,7 +391,7 @@ export default function EnhancedTable() {
                         role="checkbox"
                         aria-checked={isItemSelected}
                         tabIndex={-1}
-                        key={row.source.id}
+                        key={row.title}
                         selected={isItemSelected}
                       >
                         <TableCell padding="checkbox">
@@ -422,16 +406,22 @@ export default function EnhancedTable() {
                           scope="row"
                           padding="none"
                         >
-                          <img style={{width: "50px"}}src={row.urlToImage} />
+                          <img style={{ width: "50px" }} src={row.urlToImage} />
                         </TableCell>
-                        <TableCell align="right">{row.source.name ? row.source.name: 'N/A'}</TableCell>
-                        <TableCell align="right">{row.author ? row.author : 'N/A'}</TableCell>
-                        <TableCell align="right">{row.title ? row.title : 'N/A'}</TableCell>
+                        <TableCell align="right">
+                          {row.source.name ? row.source.name : "N/A"}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.author ? row.author : "N/A"}
+                        </TableCell>
+                        <TableCell align="right">
+                          {row.title ? row.title : "N/A"}
+                        </TableCell>
                         <TableCell align="right">
                           {moment(row.publishedAt).format("MMM, Do YYYY")}
                         </TableCell>
                         <TableCell align="right">
-                          <a href={row.url}>Read more</a>
+                          <a style={{textDecoration: "none"}}href={row.url}>Read more</a>
                         </TableCell>
                       </TableRow>
                     );
@@ -445,6 +435,7 @@ export default function EnhancedTable() {
             </Table>
           </TableContainer>
           <TablePagination
+            style={{ backgroundColor: "red" }}
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={filteredNews.length}
